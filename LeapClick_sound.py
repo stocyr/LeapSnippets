@@ -54,7 +54,7 @@ class SampleListener(Leap.Listener):
 
 
 def main():
-    #pygame.mixer.pre_init(44100,-16,2, 128)
+    pygame.mixer.pre_init(44100,-16,2, 1024)
     pygame.mixer.init()
     pygame.init()
     
