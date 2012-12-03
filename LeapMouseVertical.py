@@ -11,9 +11,9 @@ import ctypes # for mouse control
 
 
 class LeapListener(Leap.Listener):    
-    z_offset = 240      # distance of the leap from the monitor in mm (240)
-    y_offset = 500      # top border of the monitor from the leap's top in mm (320)
-    x_offset = 330      # left  border of the monitor to the leap's center in mm (260)
+    z_offset = 240      # distance of the leap from the monitor in mm
+    y_offset = 500      # top border of the monitor from the leap's top in mm
+    x_offset = 330      # left  border of the monitor to the leap's center in mm
     
     mm2pixel = 1200/320
     
@@ -42,10 +42,12 @@ class LeapListener(Leap.Listener):
             fingers = hand.fingers()
             numFingers = len(fingers)
             if numFingers >= 1:
-                #ctypes.windll.user32.mouse_event(2, 0, 0, 0,0) # left down
+                #ctypes.windll.user32.mouse_event(2, 0, 0, 0,0) # left mouse button down
                 
                 ray = fingers[0].tip()
                 
+                # calculate piercing point of a ray through a plane (plane: parallel to z axis)
+                # that's just some simplified vector math with cartesian equations
                 x = self.direction_scaling*ray.direction.x*((-self.z_offset) - ray.position.z)/ray.direction.z + ray.position.x
                 y = self.direction_scaling*ray.direction.y*((-self.z_offset) - ray.position.z)/ray.direction.z + ray.position.y
                 
@@ -57,12 +59,13 @@ class LeapListener(Leap.Listener):
                 x = x*self.mm2pixel
                 y = y*self.mm2pixel
                 
-                # I'm on the left monitor...
+                # I'm on the left monitor of a dual screen setup...
                 x = x + 1920
                 
                 ctypes.windll.user32.SetCursorPos(int(x + 0.5), int(y + 0.5))
             else:
-                #ctypes.windll.user32.mouse_event(4, 0, 0, 0,0) # left up
+                # if there are no fingers in the room
+                #ctypes.windll.user32.mouse_event(4, 0, 0, 0,0) # left mouse button up
                 pass
 
 def main():
