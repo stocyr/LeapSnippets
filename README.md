@@ -30,3 +30,7 @@ This app has a different approach for mouse control: you can point on the screen
 ## LeapStick
 
 A joystick emulator where you can control 3 axes with the orientation of the hand plane.
+
+## LeapTheremin
+
+A very basic Theremin emulation with pitch modulation over midi.

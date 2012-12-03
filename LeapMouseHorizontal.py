@@ -6,8 +6,7 @@
 # This software is subject to copyright.                                       #
 ################################################################################
 
-import Leap, sys, winsound
-import win32api, win32con
+import Leap, sys
 import time
 
 
@@ -23,7 +22,7 @@ class LeapListener(Leap.Listener):
     mouse_y = 500
     
     history = 1
-    scale = 20
+    scale = 10
     accel_factor = 0.00
 
     def onInit(self, controller):
@@ -60,14 +59,14 @@ class LeapListener(Leap.Listener):
                     click()
                     print 'click - timestamp: %d' % frame.timestamp()
                     self.button_down = True
-                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,x,y,0,0)
+                    # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,x,y,0,0)
                 elif self.button_down == True and fingers[0].velocity().y > self.button_hysteresis and 0:
                     #print 'click up'
-                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,x,y,0,0)
+                    # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,x,y,0,0)
                     self.button_down = False
             elif self.button_down == True:
                 #print 'click up'
-                win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,x,y,0,0)
+                # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,x,y,0,0)
                 self.button_down = False
             
             # Check if the hand has a palm
@@ -81,17 +80,17 @@ class LeapListener(Leap.Listener):
                 #print 'palm velocity: x: %d, y: %d, z: %d' % (hand.velocity().x, hand.velocity().y, hand.velocity().z)
                 
                 
-                if self.palm_down == False and hand.velocity().y < -self.palm_threshold:
+                if self.palm_down == False and hand.velocity().y > self.palm_threshold:
                     # if the palm is being dropped:
                     print 'mouse down - timestamp: %d' % frame.timestamp()
                     self.palm_down = True
                 
-                elif self.palm_down == True and hand.velocity().y > self.palm_threshold:
+                elif self.palm_down == True and hand.velocity().y < -self.palm_threshold:
                     # if the palm is being lifted:
                     print 'mouse up - timestamp: %d' % frame.timestamp()
                     self.palm_down = False
                 
-                if len(hands_old) >= 1 and hands_old[0].palm() != None: # self.palm_down == True and 
+                if len(hands_old) >= 1 and hands_old[0].palm() != None and self.palm_down == True: 
                     # find out the relative movement since the last frame
                     delta_x = hands_old[0].palm().position.x - palm.x
                     delta_y = hands_old[0].palm().position.z - palm.z
@@ -101,14 +100,11 @@ class LeapListener(Leap.Listener):
                     
                     #print '%f, %f  |  %d, %d' % (delta_x, delta_y, self.mouse_x, self.mouse_y)
                     
-                    win32api.SetCursorPos((int(self.mouse_x + 0.5), int(self.mouse_y + 0.5)))
+                    ctypes.windll.user32.SetCursorPos((int(self.mouse_x + 0.5), int(self.mouse_y + 0.5)))
             else:
                 self.palm_down = False
 
-def click():
-    winsound.PlaySound('Windows-Start.wav', winsound.SND_FILENAME)
-
-
+                
 def main():
     # Create a sample listener and assign it to a controller to receive events
     listener = LeapListener()
